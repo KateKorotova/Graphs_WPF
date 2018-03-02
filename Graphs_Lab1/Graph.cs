@@ -33,20 +33,17 @@ namespace Graphs_Lab1
     }
     internal class Graph
     {
-        internal Graph(int count)
+        internal Graph()
         {
-            this.count = count;
-            vertexes = new List<Vertex>;
+            vertexes = new List<Vertex>();
         }
-        internal int count;
         internal List<Vertex> vertexes;
-
         internal void read()
         {
             int count_edges;
             Console.WriteLine("Write numbers of edges: ");
             bool k = Int32.TryParse(Console.ReadLine(), out count_edges);
-            for (int iter = 0; iter < count; iter++)
+            for (int iter = 0; iter < vertexes.Count; iter++)
             {
                 vertexes[iter] = new Vertex(iter);
             }
@@ -66,8 +63,8 @@ namespace Graphs_Lab1
 
         internal int[,] matrix()
         {
-            int[,] matrix = new int[count, count];
-            for (int i = 0; i < count; i++)
+            int[,] matrix = new int[vertexes.Count, vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
             {
                 if (vertexes[i].neighbors.Count != 0)
                 {
@@ -82,8 +79,8 @@ namespace Graphs_Lab1
         {
             Queue<Vertex> queue = new Queue<Vertex>();
             List<Vertex> result = new List<Vertex>();
-            bool[] check = new bool[count];
-            for (int i = 0; i < count; i++)
+            bool[] check = new bool[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
                 check[i] = true;
             queue.Enqueue(vertexes[index]);
             while (queue.Count != 0)
@@ -105,8 +102,8 @@ namespace Graphs_Lab1
         internal void dfs(int index)
         {
             Stack<Vertex> stack = new Stack<Vertex>();
-            bool[] check = new bool[count];
-            for (int i = 0; i < count; i++)
+            bool[] check = new bool[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
                 check[i] = true;
             stack.Push(vertexes[index]);
             while (stack.Count != 0)
@@ -133,18 +130,18 @@ namespace Graphs_Lab1
 
         internal void dijkstra(int index)
         {
-            int[] minway = new int[count];
-            for (int i = 0; i < count; i++)
+            int[] minway = new int[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
             {
                 if (i == index)
                     minway[i] = 0;
                 else
                     minway[i] = -1;
             }
-            for (int i = 0; i < count - 1; i++)
+            for (int i = 0; i < vertexes.Count - 1; i++)
             {
                 int min = 0;
-                for (int j = 1; j < count; j++)
+                for (int j = 1; j < vertexes.Count; j++)
                 {
                     if (minway[min] > minway[j])
                         min = j;
@@ -167,11 +164,11 @@ namespace Graphs_Lab1
 
         internal void floyd_worshell()
         {
-            int[,] ways = new int[count, count];
+            int[,] ways = new int[vertexes.Count, vertexes.Count];
             ways = matrix();
-            for (int k = 0; k < count; k++)
-                for (int i = 0; i < count; i++)
-                    for (int j = 0; j < count; j++)
+            for (int k = 0; k < vertexes.Count; k++)
+                for (int i = 0; i < vertexes.Count; i++)
+                    for (int j = 0; j < vertexes.Count; j++)
                         if (ways[i, k] + ways[k, j] < ways[i, j])
                             ways[i, j] = ways[i, k] + ways[k, j];
 
@@ -194,8 +191,8 @@ namespace Graphs_Lab1
                     edges.Add(new Edge(vertex, neighbour.Item1, neighbour.Item2));
             edges.Sort((a, b) => a.weight.CompareTo(b.weight));
 
-            int[] colors = new int[count];
-            for (int i = 0; i < count; i++)
+            int[] colors = new int[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
                 colors[i] = i;
 
         }
