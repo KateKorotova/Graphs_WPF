@@ -24,12 +24,14 @@ namespace Graphs_Lab1
         {
             InitializeComponent();
         }
-        int count_click = 0; 
+        int count_click = 0;
+        Graph mygraph; 
 
         private void graph_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            Vertex ver = new Vertex(count_click);
             TextBlock txt = new TextBlock();
-            txt.Text = count_click.ToString();
+            txt.Text = ver.number.ToString();
             txt.FontSize = 10;
             txt.Width = 40;
             txt.Height = 30;
@@ -48,9 +50,13 @@ namespace Graphs_Lab1
             Canvas.SetTop(txt, position.Y);
             graph.Children.Add(vertex);
             graph.Children.Add(txt);
-            count_click++; 
-
+            ver.x = position.X - vertex.Width / 2;
+            ver.y = position.Y - vertex.Height / 2;
+            mygraph.vertexes.Add(ver); 
+            count_click++;
         }
+
+
 
 
     }
