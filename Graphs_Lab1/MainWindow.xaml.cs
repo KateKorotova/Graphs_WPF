@@ -15,9 +15,7 @@ using System.Windows.Shapes;
 
 namespace Graphs_Lab1
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -27,8 +25,10 @@ namespace Graphs_Lab1
         int count_click = 0;
         Graph mygraph = new Graph();
         int radius = 15;
+        int checkPaintVrt = -1;
+        Vertex tempVrt = null;
 
-        internal void paintVer(Vertex ver, SolidColorBrush color)
+        internal void paintVer(Vertex ver)
         {
             TextBlock txt = new TextBlock();
             txt.Text = ver.number.ToString();
@@ -40,7 +40,7 @@ namespace Graphs_Lab1
             Ellipse vertex = new Ellipse();
             vertex.Width = radius * 2;
             vertex.Height = radius * 2;
-            vertex.Fill = color;
+            vertex.Fill = ver.color;
             vertex.Stroke = Brushes.DarkGreen;
             vertex.StrokeThickness = 1;
             Canvas.SetLeft(vertex, ver.x - radius);
@@ -50,6 +50,23 @@ namespace Graphs_Lab1
             graph.Children.Add(vertex);
             graph.Children.Add(txt);
         }
+
+
+        internal void paintEdge(Vertex vrtx1, Vertex vrtx2)
+        {
+            Line edge = new Line();
+            edge.X1 = vrtx1.x;
+            edge.Y1 = vrtx1.y;
+            edge.X2 = vrtx2.x;
+            edge.Y2 = vrtx2.y;
+            edge.Stroke = Brushes.DarkGreen;
+            edge.StrokeThickness = 1;
+            edge.HorizontalAlignment = HorizontalAlignment.Left;
+            edge.VerticalAlignment = VerticalAlignment.Center;
+            graph.Children.Add(edge);
+            mygraph.vertexes[vrtx1.number].neighbors.Add(new Tuple<Vertex, int>(vrtx2, 1));
+        }
+
         internal Vertex check(double x, double y, double radius)
         {
             foreach (Vertex ver in mygraph.vertexes)
@@ -63,6 +80,7 @@ namespace Graphs_Lab1
 
         private void graph_MouseUp(object sender, MouseButtonEventArgs e)
         {
+
             Point position = e.GetPosition(graph);
             Vertex myvertex = check(position.X, position.Y, radius);
             if (myvertex == null)
@@ -70,15 +88,33 @@ namespace Graphs_Lab1
                 Vertex ver = new Vertex(count_click);
                 ver.x = position.X ;
                 ver.y = position.Y ;
-                paintVer(ver, Brushes.MediumAquamarine);
+                ver.color = Brushes.MediumAquamarine; 
+                paintVer(ver);
                 mygraph.vertexes.Add(ver);
                 count_click++;
             }
             else
             {
-                paintVer( myvertex, Brushes.LightGreen);
+                myvertex.color = Brushes.LightGreen; 
+                paintVer( myvertex);
+                if (checkPaintVrt == -1)
+                { 
+                    checkPaintVrt = 1;
+                    tempVrt = myvertex;
+                }
+                else
+                {
+                    tempVrt.color = Brushes.MediumAquamarine;
+                    myvertex.color = Brushes.MediumAquamarine;
+                    paintEdge(tempVrt, myvertex); 
+                    paintVer(tempVrt);
+                    paintVer(myvertex);
+                    checkPaintVrt = -1;
+                }  
             }
         }
+
+  
 
     }
 }

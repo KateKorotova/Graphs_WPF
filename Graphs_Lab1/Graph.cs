@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Graphs_Lab1
 {
@@ -16,7 +17,8 @@ namespace Graphs_Lab1
         internal int number;
         internal List<Tuple<Vertex, int>> neighbors;
         internal double x;
-        internal double y; 
+        internal double y;
+        internal SolidColorBrush color;
     }
 
     internal class Edge
