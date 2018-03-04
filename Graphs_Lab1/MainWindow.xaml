@@ -7,16 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Canvas x:Name="graph" HorizontalAlignment="Left" Height="319" VerticalAlignment="Top" Width="445" Background="Transparent" MouseUp="graph_MouseUp"/>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="425,285,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Click="button_Click">
-            <Button.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="0.894"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Button.RenderTransform>
-        </Button>
+        <Canvas x:Name="graph" Background="Transparent" MouseUp="graph_MouseUp" Margin="-5,0,127,0"/>
+        <Button x:Name="button" Content="Start algorithm
+                " Margin="0,0,10,62" Click="button_Click" HorizontalAlignment="Right" Width="86" Height="27" VerticalAlignment="Bottom"/>
+        <Button x:Name="original_state" Content="Original state" Margin="0,0,10,22" Click="button1_Click" HorizontalAlignment="Right" Width="86" Height="27" VerticalAlignment="Bottom"/>
+        <GridSplitter x:Name="gridSplitter" Margin="0,6,117,10" Width="5"/>
+        <ComboBox x:Name="comboBox" Margin="0,33,5,0" SelectionChanged="comboBox_SelectionChanged" Initialized="comboBox_Initialized" HorizontalAlignment="Right" Width="107" Height="22" VerticalAlignment="Top"/>
     </Grid>
 </Window>

@@ -106,14 +106,14 @@ namespace Graphs_Lab1
 
         }
 
-        //internal void paintGraph(Graph mygraph)
-        //{
-        //    foreach(Vertex vrtx in mygraph.vertexes)
-        //        foreach(Edge edge in vrtx.neighbors)
-        //            paintEdge(edge.from, edge.to, edge.color);
-        //    foreach (Vertex vrtx in mygraph.vertexes)
-        //        paintVer(vrtx);
-        //}
+        internal void repaintGraph()
+        {
+            foreach (Vertex vrtx in mygraph.vertexes)
+                foreach (Edge edge in vrtx.neighbors)
+                    paintEdge(edge.from, edge.to, edge.color);
+            foreach (Vertex vrtx in mygraph.vertexes)
+                paintVer(vrtx, vrtx.color);
+        }
 
         internal void paintAlg(List<Tuple<Vertex, Vertex, SolidColorBrush>> steps) 
         {
@@ -122,20 +122,25 @@ namespace Graphs_Lab1
                 colors[i] = mygraph.vertexes[i].color;
             foreach(Tuple<Vertex, Vertex, SolidColorBrush> step in steps)
             {
-                if(step.Item2 == null) // vertex
+                this.Dispatcher.Invoke((Action)(() =>
                 {
-                    paintVer(step.Item1, step.Item3);
-                    colors[step.Item1.number] = step.Item3;
-                }
-                else
-                {
-                    paintEdge(step.Item1, step.Item2, step.Item3);
-                    paintVer(step.Item1, colors[step.Item1.number]);
-                    paintVer(step.Item2, colors[step.Item2.number]);
-                }
-                System.Threading.Thread.Sleep(500);
+                    if (step.Item2 == null) // vertex
+                    {
+                        paintVer(step.Item1, step.Item3);
+                        colors[step.Item1.number] = step.Item3;
+                    }
+                    else
+                    {
+                        paintEdge(step.Item1, step.Item2, step.Item3);
+                        paintVer(step.Item1, colors[step.Item1.number]);
+                        paintVer(step.Item2, colors[step.Item2.number]);
+                    }
+
+                }));
+                System.Threading.Thread.Sleep(1000);
             }
         }
+
         internal Vertex check(double x, double y, double radius)
         {
             foreach (Vertex ver in mygraph.vertexes)
@@ -185,7 +190,51 @@ namespace Graphs_Lab1
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-              paintAlg(mygraph.bfs(0));
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> list = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
+            int index = comboBox.SelectedIndex;
+            switch (index)
+            {
+                case 0:
+                    list = mygraph.bfs(0);
+                    break;
+                case 1:
+                    list = mygraph.dfs(0);
+                    break;
+            }
+            Task.Run(() =>
+            {
+
+                paintAlg(list);
+            });
+            int a = comboBox.SelectedIndex;
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            repaintGraph();
+        }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int a = 0; 
+        }
+
+        private void comboBox_Initialized(object sender, EventArgs e)
+        {
+            List<string> algorithms = new List<string>();
+            algorithms.Add("Bfs");
+            algorithms.Add("Dfs");
+            algorithms.Add("Kruskal algorithm");
+            algorithms.Add("Prima algorithm");
+            algorithms.Add("Bellman-Ford algorithm");
+            algorithms.Add("Dijkstra algorithm");
+            algorithms.Add("Floyd-Worshell algoritm");
+            algorithms.Add("Johnson's algorithm");
+            algorithms.Add("Ford–Fulkerson algorithm");
+            algorithms.Add("Edmonds–Karp algorithm");
+            foreach (string algorithm in algorithms)
+                comboBox.Items.Add(algorithm);
+            comboBox.SelectedIndex = 0;
         }
     }
 }

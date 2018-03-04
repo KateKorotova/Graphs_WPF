@@ -102,42 +102,49 @@ namespace Graphs_Lab1
             for (int i = 0; i < vertexes.Count; i++)
                 check[i] = true;
             queue.Enqueue(vertexes[index]);
+            check[index] = false; 
             result.Add(addVrtx(vertexes[index], Brushes.Yellow));   // vertex in queue
             while (queue.Count != 0)
             {
                 Vertex temp = queue.Dequeue();
-                result.Add(addVrtx(temp, Brushes.Violet)); //stand on vertex
+                result.Add(addVrtx(temp, Brushes.Red)); //stand on vertex
                 foreach (Edge edge in temp.neighbors)
                 {
                     if (check[edge.to.number] == true)
                     {
+                        result.Add(addEdge(temp, edge.to, Brushes.Yellow));
                         result.Add(addVrtx(edge.to, Brushes.Yellow));
-                        result.Add(addEdge(temp, edge.to, Brushes.Blue));
                         check[edge.to.number] = false;
                         queue.Enqueue(edge.to);
                     }
                 }
-                result.Add(addVrtx(temp, Brushes.Brown)); //end of check of vertex
+                result.Add(addVrtx(temp, Brushes.DarkBlue)); //end of check of vertex
             }
             return result;
         }
 
-        internal void dfs(int index)
+        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> dfs(int index)
         {
             Stack<Vertex> stack = new Stack<Vertex>();
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
             bool[] check = new bool[vertexes.Count];
             for (int i = 0; i < vertexes.Count; i++)
                 check[i] = true;
             stack.Push(vertexes[index]);
+            check[index] = false;
+            result.Add(addVrtx(vertexes[index], Brushes.Red));   // vertex in stack
             while (stack.Count != 0)
             {
                 bool del = true;
                 Vertex temp = stack.Peek();
-
+                result.Add(addVrtx(temp, Brushes.Orange)); //stand on vertex
                 foreach (Edge edge in temp.neighbors)
                 {
                     if (check[edge.to.number] == true)
                     {
+                        result.Add(addEdge(temp, edge.to, Brushes.Red));
+                        result.Add(addVrtx(edge.to, Brushes.Orange));
+                        result.Add(addVrtx(edge.from, Brushes.Red));
                         check[edge.to.number] = false;
                         stack.Push(edge.to);
                         del = false;
@@ -146,8 +153,15 @@ namespace Graphs_Lab1
 
                 }
                 if (del == true)
+                {
                     stack.Pop();
+                    result.Add(addVrtx(temp, Brushes.DarkBlue)); //end of check of vertex
+                    if(stack.Count != 0)
+                        result.Add(addVrtx(stack.Peek(), Brushes.Orange)); //end of check of vertex
+  
+                }
             }
+            return result;
 
         }
 
