@@ -8,5 +8,15 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Canvas x:Name="graph" HorizontalAlignment="Left" Height="319" VerticalAlignment="Top" Width="445" Background="Transparent" MouseUp="graph_MouseUp"/>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="425,285,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Click="button_Click">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="0.894"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
     </Grid>
 </Window>

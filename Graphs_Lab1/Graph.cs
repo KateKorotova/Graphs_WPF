@@ -5,63 +5,70 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
+
+// TODO: Tuple<> <--> Edge<>
 namespace Graphs_Lab1
 {
+
+    internal class Edge
+    {
+        internal Edge(Vertex f, Vertex t, int w, SolidColorBrush color)
+        {
+            from = f;
+            to = t;
+            weight = w;
+            this.color = color;
+        }
+        internal Vertex from;
+        internal Vertex to;
+        internal int weight;
+        internal SolidColorBrush color;
+    }
+
     internal class Vertex
     {
         internal Vertex(int num)
         {
             this.number = num;
-            neighbors = new List<Tuple<Vertex, int>>();
+            neighbors = new List<Edge>();
         }
         internal int number;
-        internal List<Tuple<Vertex, int>> neighbors;
+        internal List<Edge> neighbors;
         internal double x;
         internal double y;
         internal SolidColorBrush color;
     }
 
-    internal class Edge
-    {
-        internal Edge(Vertex f, Vertex t, int w)
-        {
-            from = f;
-            to = t;
-            weight = w;
-        }
-        internal Vertex from;
-        internal Vertex to;
-        internal int weight;
-    }
     internal class Graph
     {
         internal Graph()
         {
             vertexes = new List<Vertex>();
         }
+
         internal List<Vertex> vertexes;
-        internal void read()
-        {
-            int count_edges;
-            Console.WriteLine("Write numbers of edges: ");
-            bool k = Int32.TryParse(Console.ReadLine(), out count_edges);
-            for (int iter = 0; iter < vertexes.Count; iter++)
-            {
-                vertexes[iter] = new Vertex(iter);
-            }
-            for (int iter = 0; iter < count_edges; iter++)
-            {
-                string putin = Console.ReadLine();
-                string[] edge = putin.Split(' ');
-                int i;
-                int j;
-                int w;
-                bool b = Int32.TryParse(edge[0], out i);
-                bool c = Int32.TryParse(edge[1], out j);
-                bool a = Int32.TryParse(edge[2], out w);
-                vertexes[i].neighbors.Add(new Tuple<Vertex, int>(vertexes[j], w));
-            }
-        }
+        //internal void read()
+        //{
+        //    int count_edges;
+        //    Console.WriteLine("Write numbers of edges: ");
+        //    bool k = Int32.TryParse(Console.ReadLine(), out count_edges);
+        //    for (int iter = 0; iter < vertexes.Count; iter++)
+        //    {
+        //        vertexes[iter] = new Vertex(iter);
+        //    }
+        //    for (int iter = 0; iter < count_edges; iter++)
+        //    {
+        //        string putin = Console.ReadLine();
+        //        string[] edge = putin.Split(' ');
+        //        int i;
+        //        int j;
+        //        int w;
+        //        bool b = Int32.TryParse(edge[0], out i);
+        //        bool c = Int32.TryParse(edge[1], out j);
+        //        bool a = Int32.TryParse(edge[2], out w);
+        //        vertexes[i].neighbors.Add(new Tuple<Vertex, int>(vertexes[j], w));
+        //    }
+        //}
 
         internal int[,] matrix()
         {
@@ -71,32 +78,46 @@ namespace Graphs_Lab1
                 if (vertexes[i].neighbors.Count != 0)
                 {
                     for (int j = 0; j < vertexes[i].neighbors.Count; j++)
-                        matrix[(vertexes[i].number), (vertexes[i].neighbors[j].Item1.number)] = vertexes[i].neighbors[j].Item2;
+                        matrix[(vertexes[i].number), (vertexes[i].neighbors[j].to.number)] = vertexes[i].neighbors[j].weight;
                 }
             }
             return matrix;
         }
 
-        internal List<Vertex> bfs(int index)
+        private Tuple<Vertex, Vertex, SolidColorBrush> addVrtx(Vertex my, SolidColorBrush color)
+        {
+          return new Tuple<Vertex, Vertex, SolidColorBrush>(my, null, color);
+        }
+
+        private Tuple<Vertex, Vertex, SolidColorBrush> addEdge(Vertex from, Vertex to, SolidColorBrush color)
+        {
+            return new Tuple<Vertex, Vertex, SolidColorBrush>(from, to, color);
+        }
+
+        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> bfs(int index)
         {
             Queue<Vertex> queue = new Queue<Vertex>();
-            List<Vertex> result = new List<Vertex>();
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
             bool[] check = new bool[vertexes.Count];
             for (int i = 0; i < vertexes.Count; i++)
                 check[i] = true;
             queue.Enqueue(vertexes[index]);
+            result.Add(addVrtx(vertexes[index], Brushes.Yellow));   // vertex in queue
             while (queue.Count != 0)
             {
                 Vertex temp = queue.Dequeue();
-                result.Add(temp);
-                foreach (Tuple<Vertex, int> ver in temp.neighbors)
+                result.Add(addVrtx(temp, Brushes.Violet)); //stand on vertex
+                foreach (Edge edge in temp.neighbors)
                 {
-                    if (check[ver.Item1.number] == true)
+                    if (check[edge.to.number] == true)
                     {
-                        check[ver.Item1.number] = false;
-                        queue.Enqueue(ver.Item1);
+                        result.Add(addVrtx(edge.to, Brushes.Yellow));
+                        result.Add(addEdge(temp, edge.to, Brushes.Blue));
+                        check[edge.to.number] = false;
+                        queue.Enqueue(edge.to);
                     }
                 }
+                result.Add(addVrtx(temp, Brushes.Brown)); //end of check of vertex
             }
             return result;
         }
@@ -113,12 +134,12 @@ namespace Graphs_Lab1
                 bool del = true;
                 Vertex temp = stack.Peek();
 
-                foreach (Tuple<Vertex, int> ver in temp.neighbors)
+                foreach (Edge edge in temp.neighbors)
                 {
-                    if (check[ver.Item1.number] == true)
+                    if (check[edge.to.number] == true)
                     {
-                        check[ver.Item1.number] = false;
-                        stack.Push(ver.Item1);
+                        check[edge.to.number] = false;
+                        stack.Push(edge.to);
                         del = false;
                         break;
                     }
@@ -148,15 +169,15 @@ namespace Graphs_Lab1
                     if (minway[min] > minway[j])
                         min = j;
                 }
-                foreach (Tuple<Vertex, int> edge in vertexes[min].neighbors)
+                foreach (Edge edge in vertexes[min].neighbors)
                 {
-                    int weight = edge.Item2;
-                    if (minway[edge.Item1.number] == -1)
-                        minway[edge.Item1.number] = weight + minway[min];
+                    int weight = edge.weight;
+                    if (minway[edge.to.number] == -1)
+                        minway[edge.to.number] = weight + minway[min];
                     else
                     {
-                        if (minway[edge.Item1.number] > minway[min] + weight)
-                            minway[edge.Item1.number] = minway[min] + weight;
+                        if (minway[edge.to.number] > minway[min] + weight)
+                            minway[edge.to.number] = minway[min] + weight;
                     }
 
                 }
@@ -189,10 +210,9 @@ namespace Graphs_Lab1
         {
             List<Edge> edges = new List<Edge>();
             foreach (Vertex vertex in vertexes)
-                foreach (Tuple<Vertex, int> neighbour in vertex.neighbors)
-                    edges.Add(new Edge(vertex, neighbour.Item1, neighbour.Item2));
+                foreach (Edge edge in vertex.neighbors)
+                    edges.Add(edge);
             edges.Sort((a, b) => a.weight.CompareTo(b.weight));
-
             int[] colors = new int[vertexes.Count];
             for (int i = 0; i < vertexes.Count; i++)
                 colors[i] = i;
