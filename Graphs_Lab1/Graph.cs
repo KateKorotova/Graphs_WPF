@@ -199,16 +199,26 @@ namespace Graphs_Lab1
             }
         }
 
-        internal void floyd_worshell()
+        internal int[,] floyd_worshell()
         {
             int[,] ways = new int[vertexes.Count, vertexes.Count];
             ways = matrix();
-            for (int k = 0; k < vertexes.Count; k++)
+            for (int i = 0; i < vertexes.Count; i++)
+                for (int j = 0; j < vertexes.Count; j++)
+                    if (ways[i, j] == 0)
+                        ways[i, j] = Int32.MaxValue / 2 - 1;
+                    for (int k = 0; k < vertexes.Count; k++)
                 for (int i = 0; i < vertexes.Count; i++)
                     for (int j = 0; j < vertexes.Count; j++)
                         if (ways[i, k] + ways[k, j] < ways[i, j])
                             ways[i, j] = ways[i, k] + ways[k, j];
-
+            for (int i = 0; i < vertexes.Count; i++)
+                for (int j = 0; j < vertexes.Count; j++)
+                    if (ways[i, j] == Int32.MaxValue / 2 - 1)
+                        ways[i, j] = -1;
+            for (int i = 0; i < vertexes.Count; i++)
+                ways[i, i] = 0;
+            return ways; 
         }
 
         internal int find_color(ref int[] colors, int v)

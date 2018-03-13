@@ -13,5 +13,7 @@
         <Button x:Name="original_state" Content="Original state" Margin="0,0,10,22" Click="button1_Click" HorizontalAlignment="Right" Width="86" Height="27" VerticalAlignment="Bottom"/>
         <GridSplitter x:Name="gridSplitter" Margin="0,6,117,10" Width="5"/>
         <ComboBox x:Name="comboBox" Margin="0,33,5,0" SelectionChanged="comboBox_SelectionChanged" Initialized="comboBox_Initialized" HorizontalAlignment="Right" Width="107" Height="22" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBox" Margin="0,0,10,106" TextWrapping="Wrap" Text="Weight
+                 " HorizontalAlignment="Right" Width="86" Height="23" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

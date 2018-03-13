@@ -77,6 +77,13 @@ namespace Graphs_Lab1
 
         internal void paintEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
+
+
+            string text = textBox.Text;
+            int weight;
+            bool t = Int32.TryParse(text, out weight);
+            if (t == false)
+                weight = 1; 
             Line edge = new Line();
             edge.X1 = vrtx1.x;
             edge.Y1 = vrtx1.y;
@@ -96,13 +103,30 @@ namespace Graphs_Lab1
             arrow.Stroke = color;
             arrow.Fill = color;
             arrow.StrokeThickness = 1;
+            TextBlock txt = new TextBlock();
+            txt.Text = weight.ToString();
+            txt.FontSize = 10;
+            txt.Width = 40;
+            txt.Height = 30;
+            txt.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+            txt.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            Point w = new Point();
+            w.X = (vrtx1.x + vrtx2.x) / 2;
+            w.Y = (vrtx1.y + vrtx2.y) / 2;
+            Canvas.SetLeft(txt, w.X);
+            Canvas.SetTop(txt, w.Y);
+            graph.Children.Add(txt);
             graph.Children.Add(arrow);
+            textBox.Clear();
         }
 
         internal void createEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
+            string text = textBox.Text;
+            int weight;
+            bool t = Int32.TryParse(text, out weight);
             paintEdge(vrtx1, vrtx2, color);
-            mygraph.vertexes[vrtx1.number].neighbors.Add(new Edge(vrtx1, vrtx2, 1, color));
+            mygraph.vertexes[vrtx1.number].neighbors.Add(new Edge(vrtx1, vrtx2, weight, color));
 
         }
 
@@ -190,21 +214,35 @@ namespace Graphs_Lab1
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            List<Tuple<Vertex, Vertex, SolidColorBrush>> list = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
             int index = comboBox.SelectedIndex;
-            switch (index)
-            {
-                case 0:
-                    list = mygraph.bfs(0);
-                    break;
-                case 1:
-                    list = mygraph.dfs(0);
-                    break;
-            }
+
+         
             Task.Run(() =>
             {
 
-                paintAlg(list);
+                switch (index)
+                {
+                    case 0:
+                        paintAlg(mygraph.bfs(0));
+                        break;
+                    case 1:
+                        paintAlg(mygraph.dfs(0));
+                        break;
+                    case 6:
+                        int[,] res = mygraph.floyd_worshell();
+                        string mess = "";
+                        for (int i = 0; i < mygraph.vertexes.Count; i++)
+                        {
+                            for (int j = 0; j < mygraph.vertexes.Count; j++)
+                            {
+                                mess += ("\t" + res[i, j].ToString());
+                            }
+                            mess += "\n";
+                        }
+                        MessageBox.Show(mess);
+                        break;
+
+                }
             });
             int a = comboBox.SelectedIndex;
         }
@@ -216,7 +254,6 @@ namespace Graphs_Lab1
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int a = 0; 
         }
 
         private void comboBox_Initialized(object sender, EventArgs e)
@@ -236,5 +273,7 @@ namespace Graphs_Lab1
                 comboBox.Items.Add(algorithm);
             comboBox.SelectedIndex = 0;
         }
+
+
     }
 }
