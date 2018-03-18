@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 
 
-// TODO: Tuple<> <--> Edge<>
 namespace Graphs_Lab1
 {
 
@@ -242,9 +241,9 @@ namespace Graphs_Lab1
             return colors[v];
         }
 
-
-        internal void kruskal()
+        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> kruskal()
         {
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
             List<Edge> edges = new List<Edge>();
             foreach (Vertex vertex in vertexes)
                 foreach (Edge edge in vertex.neighbors)
@@ -253,7 +252,19 @@ namespace Graphs_Lab1
             int[] colors = new int[vertexes.Count];
             for (int i = 0; i < vertexes.Count; i++)
                 colors[i] = i;
-
+            for(int i = 0; i < edges.Count; i++)
+            {
+                int c_from = find_color(ref colors, edges[i].from.number);
+                int c_to = find_color(ref colors, edges[i].to.number);
+                if (c_from != c_to)
+                {
+                    colors[c_from] = c_to;
+                    result.Add(addVrtx(edges[i].from, Brushes.Blue));
+                    result.Add(addEdge(edges[i].to, edges[i].from, Brushes.Blue));
+                    result.Add(addVrtx(edges[i].to, Brushes.Blue));
+                }
+            }
+            return result;
         }
 
 

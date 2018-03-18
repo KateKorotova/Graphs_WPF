@@ -43,7 +43,7 @@ namespace Graphs_Lab1
             vertex.Width = radius * 2;
             vertex.Height = radius * 2;
             vertex.Fill = color;
-            vertex.Stroke = Brushes.DarkGreen;
+            vertex.Stroke = Brushes.Moccasin;
             vertex.StrokeThickness = 1;
             Canvas.SetLeft(vertex, ver.x - radius);
             Canvas.SetTop(vertex, ver.y - radius);
@@ -79,7 +79,7 @@ namespace Graphs_Lab1
         internal void paintEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
             string text = textBox.Text;
-            int weight;
+            int weight = 1;
             bool t = Int32.TryParse(text, out weight);
             if (t == false)
                 weight = 1; 
@@ -125,8 +125,10 @@ namespace Graphs_Lab1
         internal void createEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
             string text = textBox.Text;
-            int weight;
+            int weight = 1;
             bool t = Int32.TryParse(text, out weight);
+            if (t == false)
+                weight = 1;
             paintEdge(vrtx1, vrtx2, color);
             if (orient == 1)
             {
@@ -200,6 +202,9 @@ namespace Graphs_Lab1
                     case 1:
                         paintAlg(mygraph.dfs(0));
                         break;
+                    case 2:
+                        paintAlg(mygraph.kruskal());
+                        break;
                     case 3:
                         paintAlg(mygraph.prima(0));
                         break;
@@ -262,7 +267,7 @@ namespace Graphs_Lab1
                 Vertex ver = new Vertex(count_click);
                 ver.x = position.X;
                 ver.y = position.Y;
-                ver.color = Brushes.MediumAquamarine;
+                ver.color = Brushes.Cornsilk;
                 paintVer(ver, ver.color);
                 mygraph.vertexes.Add(ver);
                 count_click++;
@@ -278,9 +283,9 @@ namespace Graphs_Lab1
                 }
                 else
                 {
-                    tempVrt.color = Brushes.MediumAquamarine;
-                    myvertex.color = Brushes.MediumAquamarine;
-                    createEdge(tempVrt, myvertex, Brushes.DarkGreen);
+                    tempVrt.color = Brushes.Cornsilk;
+                    myvertex.color = Brushes.Cornsilk;
+                    createEdge(tempVrt, myvertex, Brushes.Moccasin);
                     paintVer(tempVrt, tempVrt.color);
                     paintVer(myvertex, myvertex.color);
                     checkPaintVrt = -1;
