@@ -165,8 +165,9 @@ namespace Graphs_Lab1
 
         }
 
-        internal void dijkstra(int index)
+        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> dijkstra(int index)
         {
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
             int[] minway = new int[vertexes.Count];
             for (int i = 0; i < vertexes.Count; i++)
             {
@@ -175,28 +176,40 @@ namespace Graphs_Lab1
                 else
                     minway[i] = -1;
             }
+            result.Add(addVrtx(vertexes[index], Brushes.Red)); //stand on vertex
             for (int i = 0; i < vertexes.Count - 1; i++)
             {
                 int min = 0;
                 for (int j = 1; j < vertexes.Count; j++)
                 {
+
                     if (minway[min] > minway[j])
+                    {
                         min = j;
+                    }
                 }
                 foreach (Edge edge in vertexes[min].neighbors)
                 {
                     int weight = edge.weight;
+                    result.Add(addEdge(edge.from, edge.to, Brushes.Orange));
                     if (minway[edge.to.number] == -1)
+                    {
                         minway[edge.to.number] = weight + minway[min];
+                    }
+
                     else
                     {
                         if (minway[edge.to.number] > minway[min] + weight)
+                        {
+                            result.Add(addEdge(edge.from, edge.to, Brushes.Red));
                             minway[edge.to.number] = minway[min] + weight;
+                        }
                     }
 
                 }
 
             }
+            return result;
         }
 
         internal int[,] floyd_worshell()
@@ -230,7 +243,7 @@ namespace Graphs_Lab1
         }
 
 
-        internal void Kruskal()
+        internal void kruskal()
         {
             List<Edge> edges = new List<Edge>();
             foreach (Vertex vertex in vertexes)
@@ -243,5 +256,45 @@ namespace Graphs_Lab1
 
         }
 
+
+        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> prima(int index)
+        {
+            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
+            int[] check = new int[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
+            {
+                if (i == index)
+                    check[i] = 0;
+                else
+                    check[i] = -1;
+            }
+            List<Vertex> tree = new List<Vertex>();
+            tree.Add(vertexes[index]);
+            result.Add(addVrtx(vertexes[index], Brushes.Blue));
+            int minweight = Int16.MaxValue / 2;
+            int numberto = 0;
+            int numberfrom = 0; 
+            for (int i = 0; i < vertexes.Count; i++)
+            {
+                foreach (Vertex vrtx in tree)
+                {
+                    foreach (Edge edge in vrtx.neighbors)
+                    {
+                        if (minweight > edge.weight && check[edge.to.number] == -1)
+                        {
+                            minweight = edge.weight;
+                            numberfrom = edge.from.number;
+                            numberto = edge.to.number;
+                        }
+                    }
+                }
+                check[numberto] = 0;
+                tree.Add(vertexes[numberto]);
+                result.Add(addEdge(vertexes[numberfrom], vertexes[numberto], Brushes.Blue));
+                result.Add(addVrtx(vertexes[numberto], Brushes.Blue));
+                minweight = Int16.MaxValue / 2; 
+            }
+            return result; 
+        }
     }
 }
