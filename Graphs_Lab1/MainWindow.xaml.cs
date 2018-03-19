@@ -23,7 +23,8 @@ namespace Graphs_Lab1
         int radius = 15;
         int checkPaintVrt = -1;
         Vertex tempVrt = null;
-        int orient = 0; 
+        int orient = 0;
+        int numbercurrvrtx; 
 
         internal void paintVer(Vertex ver, SolidColorBrush color)
         {
@@ -190,27 +191,56 @@ namespace Graphs_Lab1
         private void button_Click(object sender, RoutedEventArgs e)
         {
             int index = comboBox.SelectedIndex;
-
-         
+            int indexvrtx = 0;
+            if (checkPaintVrt == 1)
+                indexvrtx = numbercurrvrtx;
             Task.Run(() =>
             {
 
                 switch (index)
                 {
                     case 0:
-                        paintAlg(mygraph.bfs(0));
+                        paintAlg(mygraph.bfs(indexvrtx));
                         break;
                     case 1:
-                        paintAlg(mygraph.dfs(0));
+                        paintAlg(mygraph.dfs(indexvrtx));
                         break;
                     case 2:
                         paintAlg(mygraph.kruskal());
                         break;
                     case 3:
-                        paintAlg(mygraph.prima(0));
+                        paintAlg(mygraph.prima(indexvrtx));
+                        break;
+                    case 4:
+                        int[] result = mygraph.bellmanford(indexvrtx);
+                        string message = "";
+                        for (int i = 0; i < mygraph.vertexes.Count; i++)
+                        {
+                            if (result[i] == 0)
+                                message += " Start Vertex: " + i.ToString() + "\n";
+                            if (result[i] == -1)
+                                message += ("vertex: " + i.ToString() + " - minimum distance: " + "INF" + "\n");
+ 
+                            else
+                                message += ("vertex: " + i.ToString() + " - minimum distance: " + result[i].ToString() + "\n");
+                        }
+                        MessageBox.Show("INF - you don't have common edge");
+                        MessageBox.Show(message);
                         break;
                     case 5:
-                        paintAlg(mygraph.dijkstra(0));
+                        int[] result1 = mygraph.dijkstra(indexvrtx);
+                        string message1 = "";
+                        for (int i = 0; i < mygraph.vertexes.Count; i++)
+                        {
+                            if (result1[i] == 0)
+                                message1 += " Start Vertex: " + i.ToString() + "\n";
+                            if (result1[i] == -1)
+                                message1 += ("vertex: " + i.ToString() + " - minimum distance: " + "INF" + "\n");
+                            else
+                                message1 += ("vertex: " + i.ToString() + " - minimum distance: " + result1[i].ToString() + "\n");
+                        }
+                        MessageBox.Show("INF - you don't have common edge");
+                        MessageBox.Show(message1);
                         break;
                     case 6:
                         int[,] res = mygraph.floyd_worshell();
@@ -219,11 +249,16 @@ namespace Graphs_Lab1
                         {
                             for (int j = 0; j < mygraph.vertexes.Count; j++)
                             {
-                                mess += ("\t" + res[i, j].ToString());
+                                if (res[i, j] == -1)
+                                    mess += "INF"+ "\t";
+                                else
+                                    mess += (res[i, j].ToString() + "\t");
                             }
                             mess += "\n";
                         }
+                        MessageBox.Show("INF - you don't have common edge");
                         MessageBox.Show(mess);
+
                         break;
 
                 }
@@ -279,6 +314,7 @@ namespace Graphs_Lab1
                 if (checkPaintVrt == -1)
                 {
                     checkPaintVrt = 1;
+                    numbercurrvrtx = myvertex.number;
                     tempVrt = myvertex;
                 }
                 else

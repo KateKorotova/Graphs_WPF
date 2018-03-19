@@ -189,10 +189,9 @@ namespace Graphs_Lab1
 
         }
 
-        internal List<Tuple<Vertex, Vertex, SolidColorBrush>> dijkstra(int index)
+        internal int[] dijkstra(int index)
         {
-            List<Tuple<Vertex, Vertex, SolidColorBrush>> result = new List<Tuple<Vertex, Vertex, SolidColorBrush>>();
-            int[] minway = new int[vertexes.Count];
+            int[] minway = new int[size()];
             for (int i = 0; i < vertexes.Count; i++)
             {
                 if (i == index)
@@ -200,7 +199,6 @@ namespace Graphs_Lab1
                 else
                     minway[i] = -1;
             }
-            result.Add(addVrtx(vertexes[index], Brushes.Red)); //stand on vertex
             for (int i = 0; i < vertexes.Count - 1; i++)
             {
                 int min = 0;
@@ -215,7 +213,6 @@ namespace Graphs_Lab1
                 foreach (Edge edge in vertexes[min].neighbors)
                 {
                     int weight = edge.weight;
-                    result.Add(addEdge(edge.from, edge.to, Brushes.Orange));
                     if (minway[edge.to.number] == -1)
                     {
                         minway[edge.to.number] = weight + minway[min];
@@ -225,7 +222,6 @@ namespace Graphs_Lab1
                     {
                         if (minway[edge.to.number] > minway[min] + weight)
                         {
-                            result.Add(addEdge(edge.from, edge.to, Brushes.Red));
                             minway[edge.to.number] = minway[min] + weight;
                         }
                     }
@@ -233,7 +229,7 @@ namespace Graphs_Lab1
                 }
 
             }
-            return result;
+            return minway;
         }
 
         internal int[,] floyd_worshell()
@@ -334,6 +330,26 @@ namespace Graphs_Lab1
         }
 
 
-
+        internal int[] bellmanford(int index)
+        {
+            int[] minway = new int[vertexes.Count];
+            for (int i = 0; i < vertexes.Count; i++)
+                    minway[i] = Int16.MaxValue/2 - 2;
+            minway[index] = 0;
+            List<Edge> edges = new List<Edge>();
+            foreach (Vertex vertex in vertexes)
+                foreach (Edge edge in vertex.neighbors)
+                    edges.Add(edge);
+            for(int i = 0; i < vertexes.Count - 1; i++)
+                for(int j = 0; j < edges.Count; j++)
+                {
+                    if (minway[edges[j].to.number] > minway[edges[j].from.number] + edges[j].weight)
+                        minway[edges[j].to.number] = minway[edges[j].from.number] + edges[j].weight;
+                }
+            for (int i = 0; i < minway.Length; i++)
+                if (minway[i] == Int16.MaxValue / 2 - 2)
+                    minway[i] = -1; 
+            return minway;
+        }
     }
 }
