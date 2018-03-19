@@ -254,7 +254,7 @@ namespace Graphs_Lab1
             return ways; 
         }
 
-        internal int find_color(ref int[] colors, int v)
+        private int find_color(ref int[] colors, int v)
         {
             if (v == colors[v])
                 return v;
@@ -287,7 +287,6 @@ namespace Graphs_Lab1
             }
             return result;
         }
-
 
         internal List<Tuple<Vertex, Vertex, SolidColorBrush>> prima(int index)
         {
@@ -329,7 +328,6 @@ namespace Graphs_Lab1
             return result; 
         }
 
-
         internal int[] bellmanford(int index)
         {
             int[] minway = new int[vertexes.Count];
@@ -351,5 +349,7 @@ namespace Graphs_Lab1
                     minway[i] = -1; 
             return minway;
         }
+
+
     }
 }

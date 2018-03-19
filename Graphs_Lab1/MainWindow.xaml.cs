@@ -26,7 +26,7 @@ namespace Graphs_Lab1
         int orient = 0;
         int numbercurrvrtx; 
 
-        internal void paintVer(Vertex ver, SolidColorBrush color)
+        private void paintVer(Vertex ver, SolidColorBrush color)
         {
             TextBlock txt = new TextBlock();
             txt.Text = ver.number.ToString();
@@ -50,7 +50,8 @@ namespace Graphs_Lab1
             graph.Children.Add(vertex);
             graph.Children.Add(txt);
         }
-        internal List<double> paintArrow(double x1, double y1, double x2, double y2)
+
+        private List<double> paintArrow(double x1, double y1, double x2, double y2)
         {
             List<double> result = new List<double>();
             int l = 10;
@@ -73,7 +74,7 @@ namespace Graphs_Lab1
             return result;
         }
 
-        internal void paintEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
+        private void paintEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
 
             Line edge = new Line();
@@ -101,7 +102,7 @@ namespace Graphs_Lab1
             }
         }
 
-        internal void paintEdgeWeight(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color, int weight)
+        private void paintEdgeWeight(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color, int weight)
         {
             paintEdge(vrtx1, vrtx2, color);
             TextBlock txt = new TextBlock();
@@ -123,8 +124,7 @@ namespace Graphs_Lab1
             textBox.Clear();
         }
 
-
-        internal void createEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
+        private void createEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
             string text = textBox.Text;
             int weight = 1;
@@ -141,7 +141,7 @@ namespace Graphs_Lab1
             paintEdgeWeight(vrtx1, vrtx2, color, weight);
         }
 
-        internal void repaintGraph()
+        private void repaintGraph()
         {
             foreach (Vertex vrtx in mygraph.vertexes)
                 foreach (Edge edge in vrtx.neighbors)
@@ -150,7 +150,7 @@ namespace Graphs_Lab1
                 paintVer(vrtx, vrtx.color);
         }
 
-        internal void paintAlg(List<Tuple<Vertex, Vertex, SolidColorBrush>> steps) 
+        private void paintAlg(List<Tuple<Vertex, Vertex, SolidColorBrush>> steps) 
         {
             SolidColorBrush[] colors = new SolidColorBrush[mygraph.vertexes.Count];
             for(int i = 0; i< colors.Length; i++)
@@ -176,7 +176,7 @@ namespace Graphs_Lab1
             }
         }
 
-        internal Vertex check(double x, double y, double radius)
+        private Vertex check(double x, double y, double radius)
         {
             foreach (Vertex ver in mygraph.vertexes)
             {
@@ -187,13 +187,16 @@ namespace Graphs_Lab1
             return null;
         }
 
-
         private void button_Click(object sender, RoutedEventArgs e)
         {
             int index = comboBox.SelectedIndex;
             int indexvrtx = 0;
             if (checkPaintVrt == 1)
+            {
                 indexvrtx = numbercurrvrtx;
+                checkPaintVrt = -1;
+                mygraph.vertexes[numbercurrvrtx].color = Brushes.Moccasin;
+            }
             Task.Run(() =>
             {
 
@@ -332,12 +335,23 @@ namespace Graphs_Lab1
         private void graph_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             Point position = e.GetPosition(graph);
-            Vertex myvertex =  check(position.X, position.Y, radius);
-            Ellipse my = sender as Ellipse;
-            if (myvertex != null)
+            Vertex myvertex = check(position.X, position.Y, radius);
+            int num = myvertex.number;
+            for (int i = 0; i < mygraph.size(); i++)
+                for (int j = 0; j < mygraph.vertexes[i].neighbors.Count; j++)
+                    if (mygraph.vertexes[i].neighbors[j].to.number == num)
+                    {
+                        mygraph.vertexes[i].neighbors.RemoveAt(j);
+                        break;
+                    }
+
+            mygraph.vertexes.RemoveAt(num);
+            for (int i = num; i < mygraph.size(); i++)
             {
-                graph.Children.Remove(my); 
+                mygraph.vertexes[i].number = i;
             }
+            graph.Children.Clear();
+            repaintGraph();
         }
 
         private void textBox_Initialized(object sender, EventArgs e)
@@ -379,7 +393,6 @@ namespace Graphs_Lab1
             }
             orient = 2;
         }
-
 
         private void download(object sender, RoutedEventArgs e)
         {
