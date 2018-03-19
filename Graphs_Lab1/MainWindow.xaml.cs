@@ -1,16 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Graphs_Lab1
@@ -22,7 +19,6 @@ namespace Graphs_Lab1
         {
             InitializeComponent();
         }
-        int count_click = 0;
         Graph mygraph = new Graph();
         int radius = 15;
         int checkPaintVrt = -1;
@@ -43,12 +39,12 @@ namespace Graphs_Lab1
             vertex.Width = radius * 2;
             vertex.Height = radius * 2;
             vertex.Fill = color;
-            vertex.Stroke = Brushes.Moccasin;
+            vertex.Stroke = Brushes.Wheat;
             vertex.StrokeThickness = 1;
             Canvas.SetLeft(vertex, ver.x - radius);
             Canvas.SetTop(vertex, ver.y - radius);
-            Canvas.SetLeft(txt, ver.x - radius/3);
-            Canvas.SetTop(txt, ver.y - radius/3);
+            Canvas.SetLeft(txt, ver.x - radius/3 + 2);
+            Canvas.SetTop(txt, ver.y - radius/3 - 2);
 
             graph.Children.Add(vertex);
             graph.Children.Add(txt);
@@ -78,11 +74,7 @@ namespace Graphs_Lab1
 
         internal void paintEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
-            string text = textBox.Text;
-            int weight = 1;
-            bool t = Int32.TryParse(text, out weight);
-            if (t == false)
-                weight = 1; 
+
             Line edge = new Line();
             edge.X1 = vrtx1.x;
             edge.Y1 = vrtx1.y;
@@ -106,8 +98,16 @@ namespace Graphs_Lab1
                 arrow.StrokeThickness = 1;
                 graph.Children.Add(arrow);
             }
+        }
+
+        internal void paintEdgeWeight(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color, int weight)
+        {
+            paintEdge(vrtx1, vrtx2, color);
             TextBlock txt = new TextBlock();
-            txt.Text = weight.ToString();
+            if (weight != 0)
+                txt.Text = weight.ToString();
+            else
+                txt.Text = "1";
             txt.FontSize = 10;
             txt.Width = 40;
             txt.Height = 30;
@@ -122,6 +122,7 @@ namespace Graphs_Lab1
             textBox.Clear();
         }
 
+
         internal void createEdge(Vertex vrtx1, Vertex vrtx2, SolidColorBrush color)
         {
             string text = textBox.Text;
@@ -129,7 +130,6 @@ namespace Graphs_Lab1
             bool t = Int32.TryParse(text, out weight);
             if (t == false)
                 weight = 1;
-            paintEdge(vrtx1, vrtx2, color);
             if (orient == 1)
             {
                 mygraph.vertexes[vrtx1.number].neighbors.Add(new Edge(vrtx1, vrtx2, weight, color));
@@ -137,13 +137,14 @@ namespace Graphs_Lab1
             }
             else
                 mygraph.vertexes[vrtx1.number].neighbors.Add(new Edge(vrtx1, vrtx2, weight, color));
+            paintEdgeWeight(vrtx1, vrtx2, color, weight);
         }
 
         internal void repaintGraph()
         {
             foreach (Vertex vrtx in mygraph.vertexes)
                 foreach (Edge edge in vrtx.neighbors)
-                    paintEdge(edge.from, edge.to, edge.color);
+                    paintEdgeWeight(edge.from, edge.to, edge.color, edge.weight);
             foreach (Vertex vrtx in mygraph.vertexes)
                 paintVer(vrtx, vrtx.color);
         }
@@ -264,13 +265,12 @@ namespace Graphs_Lab1
             Vertex myvertex = check(position.X, position.Y, radius);
             if (myvertex == null)
             {
-                Vertex ver = new Vertex(count_click);
+                Vertex ver = new Vertex(mygraph.size());
                 ver.x = position.X;
                 ver.y = position.Y;
-                ver.color = Brushes.Cornsilk;
+                ver.color = Brushes.Moccasin;
                 paintVer(ver, ver.color);
                 mygraph.vertexes.Add(ver);
-                count_click++;
             }
             else
             {
@@ -283,9 +283,9 @@ namespace Graphs_Lab1
                 }
                 else
                 {
-                    tempVrt.color = Brushes.Cornsilk;
-                    myvertex.color = Brushes.Cornsilk;
-                    createEdge(tempVrt, myvertex, Brushes.Moccasin);
+                    tempVrt.color = Brushes.Moccasin;
+                    myvertex.color = Brushes.Moccasin;
+                    createEdge(tempVrt, myvertex, Brushes.Wheat);
                     paintVer(tempVrt, tempVrt.color);
                     paintVer(myvertex, myvertex.color);
                     checkPaintVrt = -1;
@@ -311,12 +311,73 @@ namespace Graphs_Lab1
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
+            int check = 0;
+            foreach (Vertex vrtx in mygraph.vertexes)
+                if (vrtx.neighbors.Count != 0)
+                {
+                    check = 1;
+                    break;
+                }
+            if (check != 0)
+            {
+                graph.Children.Clear();
+                mygraph = new Graph();
+            }
+
             orient = 1;
         }
 
         private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
         {
+            int check = 0;
+            foreach (Vertex vrtx in mygraph.vertexes)
+                if (vrtx.neighbors.Count != 0)
+                {
+                    check = 1;
+                    break;
+                }
+            if (check != 0)
+            {
+                graph.Children.Clear();
+                mygraph = new Graph();
+            }
             orient = 2;
+        }
+
+
+        private void download(object sender, RoutedEventArgs e)
+        {
+            Stream myStream = null;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            openFileDialog1.InitialDirectory = Directory.GetCurrentDirectory();
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == true)
+            {
+                try
+                {
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        graph.Children.Clear();
+                        mygraph.read(openFileDialog1.FileName);
+                        repaintGraph();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        private void delete(object sender, RoutedEventArgs e)
+        {
+            graph.Children.Clear();
+            mygraph = new Graph();
         }
     }
 }

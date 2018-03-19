@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,28 +47,52 @@ namespace Graphs_Lab1
         }
 
         internal List<Vertex> vertexes;
-        //internal void read()
-        //{
-        //    int count_edges;
-        //    Console.WriteLine("Write numbers of edges: ");
-        //    bool k = Int32.TryParse(Console.ReadLine(), out count_edges);
-        //    for (int iter = 0; iter < vertexes.Count; iter++)
-        //    {
-        //        vertexes[iter] = new Vertex(iter);
-        //    }
-        //    for (int iter = 0; iter < count_edges; iter++)
-        //    {
-        //        string putin = Console.ReadLine();
-        //        string[] edge = putin.Split(' ');
-        //        int i;
-        //        int j;
-        //        int w;
-        //        bool b = Int32.TryParse(edge[0], out i);
-        //        bool c = Int32.TryParse(edge[1], out j);
-        //        bool a = Int32.TryParse(edge[2], out w);
-        //        vertexes[i].neighbors.Add(new Tuple<Vertex, int>(vertexes[j], w));
-        //    }
-        //}
+
+        internal int size()
+        {
+            return vertexes.Count;
+        }
+        
+        internal void read(string file)
+        {
+            vertexes = new List<Vertex>();
+            Random r = new Random();
+            StreamReader sr = new StreamReader(file);
+            string line = sr.ReadLine();
+            int count_edges;
+            bool k = Int32.TryParse(line, out count_edges);
+            string ori = sr.ReadLine();
+            int orient; 
+            bool l = Int32.TryParse(ori, out orient);
+            string countv = sr.ReadLine();
+            int count; 
+            bool m = Int32.TryParse(countv, out count);
+            for (int iter = 0; iter < count; iter++)
+            {
+                vertexes.Add(new Vertex(iter));
+                vertexes[iter].x = r.Next(5, 400);
+                vertexes[iter].y = r.Next(5, 400);
+                vertexes[iter].color = Brushes.Moccasin;
+            }
+
+
+            for (int iter = 0; iter < count_edges; iter++)
+            {
+                string linetemp = sr.ReadLine();
+                string[] edge = linetemp.Split(' ');
+                int i;
+                int j;
+                int w;
+                bool b = Int32.TryParse(edge[0], out i);
+                bool c = Int32.TryParse(edge[1], out j);
+                bool a = Int32.TryParse(edge[2], out w);
+                vertexes[i].neighbors.Add(new Edge(vertexes[i], vertexes[j], w, Brushes.Wheat));
+                if (orient == 1)
+                    vertexes[j].neighbors.Add(new Edge(vertexes[j], vertexes[i], w, Brushes.Wheat));
+
+            }
+            sr.Close();
+        }
 
         internal int[,] matrix()
         {
@@ -307,5 +332,8 @@ namespace Graphs_Lab1
             }
             return result; 
         }
+
+
+
     }
 }
